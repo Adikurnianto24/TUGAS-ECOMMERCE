@@ -1,0 +1,82 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Product;
+use Illuminate\Http\Request;
+
+class ProductController extends Controller
+{
+    public function index()
+    {
+        // Retrieve all products from the database
+        $products = Product::all();
+
+        return view('products.index', compact('products'));
+    }
+
+    public function create()
+    {
+        // Show the form to create a new product
+        return view('products.create');
+    }
+
+    public function store(Request $request)
+    {
+        // Validate the request data
+        $request->validate([
+            'title' => 'required|max:255',
+            'description' => 'required',
+            'price' => 'required|numeric',
+            // Add other validation rules as needed
+        ]);
+
+        // Create a new product instance
+        Product::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'price' => $request->price,
+            // Add other fields as needed
+        ]);
+
+        // Redirect to the product index page with a success message
+        return redirect()->route('products.index')->with('success', 'Product created successfully!');
+    }
+
+    public function edit(Product $product)
+    {
+        // Show the form to edit the specified product
+        return view('products.edit', compact('product'));
+    }
+
+    public function update(Request $request, Product $product)
+    {
+        // Validate the request data
+        $request->validate([
+            'title' => 'required|max:255',
+            'description' => 'required',
+            'price' => 'required|numeric',
+            // Add other validation rules as needed
+        ]);
+
+        // Update the product instance
+        $product->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'price' => $request->price,
+            // Add other fields as needed
+        ]);
+
+        // Redirect to the product index page with a success message
+        return redirect()->route('products.index')->with('success', 'Product updated successfully!');
+    }
+
+    public function destroy(Product $product)
+    {
+        // Delete the specified product
+        $product->delete();
+
+        // Redirect to the product index page with a success message
+        return redirect()->route('products.index')->with('success', 'Product deleted successfully!');
+    }
+}
